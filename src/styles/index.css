@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * 语义色 token（RGB 三元组，供 tailwind.config.js 以 rgb(var(--x) / alpha) 引用）
+ * 设计基调：番茄钟式「专注红」+ 暖石灰中性阶，深浅两套独立调校（非简单反色）
+ */
+:root {
+  color-scheme: light;
+  --c-bg: 250 250 249; /* stone-50 */
+  --c-surface: 255 255 255;
+  --c-surface-2: 245 245 244; /* stone-100 */
+  --c-line: 231 229 228; /* stone-200 */
+  --c-ink: 28 25 23; /* stone-900 */
+  --c-ink-2: 87 83 78; /* stone-600 */
+  --c-ink-3: 168 162 158; /* stone-400 */
+  --c-brand: 220 38 38; /* red-600 —— 专注红 */
+  --c-on-brand: 255 255 255;
+  --c-success: 5 150 105; /* emerald-600 */
+  --c-warning: 217 119 6; /* amber-600 */
+  --c-danger: 220 38 38; /* red-600 */
+}
+
+.dark {
+  color-scheme: dark;
+  --c-bg: 12 10 9; /* stone-950 */
+  --c-surface: 28 25 23; /* stone-900 */
+  --c-surface-2: 41 37 36; /* stone-800 */
+  --c-line: 41 37 36; /* stone-800 */
+  --c-ink: 250 250 249; /* stone-50 */
+  --c-ink-2: 168 162 158; /* stone-400 */
+  --c-ink-3: 120 113 108; /* stone-500 */
+  --c-brand: 248 113 113; /* red-400 —— 暗底提亮，保证对比 */
+  --c-on-brand: 69 10 10; /* red-950 */
+  --c-success: 52 211 153; /* emerald-400 */
+  --c-warning: 251 191 36; /* amber-400 */
+  --c-danger: 248 113 113; /* red-400 */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-ink));
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 200ms ease;
+}
+
+/* 键盘可达性：统一 focus 环 */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-brand));
+  outline-offset: 2px;
+}
+
+/* 尊重系统减弱动效设置 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
