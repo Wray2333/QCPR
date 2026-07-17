@@ -13,5 +13,7 @@ export default defineConfig({
   preview: {
     port: 4173,
     host: true,
+    // 允许通过该域名访问（Vite 默认只放行 localhost，反代/公网域名需显式加入）
+    allowedHosts: ['qcpr.20020527.xyz'],
   },
 });
