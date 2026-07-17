@@ -72,3 +72,14 @@ export function accuracyColorClass(rate) {
   if (rate >= 0.7) return 'text-warning';
   return 'text-danger';
 }
+
+/** 集合编号是否合法（严格四位数字，允许前导零，如 "0001"、"1866"） */
+export function isValidSetId(v) {
+  return /^\d{4}$/.test(v ?? '');
+}
+
+/** 录入时规范化集合编号：只保留数字并截断到 4 位 */
+export function normalizeSetId(v) {
+  return String(v ?? '').replace(/\D/g, '').slice(0, 4);
+}
+

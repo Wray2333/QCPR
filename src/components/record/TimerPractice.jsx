@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Pause, Flag } from 'lucide-react';
 import ModulePicker from './ModulePicker.jsx';
+import SetIdInput from './SetIdInput.jsx';
 import Timer from './Timer.jsx';
 import ResultForm from './ResultForm.jsx';
 import Button from '../common/Button.jsx';
 import { useTimer } from '../../hooks/useTimer.js';
 import { useRecords } from '../../hooks/useRecords.js';
 import { getModule } from '../../lib/modules.js';
-import { formatDuration } from '../../lib/format.js';
+import { formatDuration, isValidSetId } from '../../lib/format.js';
+import { getLastSetId, setLastSetId } from '../../lib/lastSetId.js';
 
 // 练习状态机：idle（选模块）→ running（计时中）→ finished（填结果）
 export default function TimerPractice() {
@@ -17,14 +19,16 @@ export default function TimerPractice() {
   const { elapsedSec, running, start, pause, reset, getElapsedSec } = useTimer();
 
   const [phase, setPhase] = useState('idle');
+  const [setId, setSetId] = useState(getLastSetId);
   const [moduleId, setModuleId] = useState(null);
   const [finalSec, setFinalSec] = useState(0);
   const [saving, setSaving] = useState(false);
 
   const module = moduleId ? getModule(moduleId) : null;
+  const canStart = !!moduleId && isValidSetId(setId);
 
   const handleStart = () => {
-    if (!moduleId) return;
+    if (!canStart) return;
     reset();
     setPhase('running');
     start();
@@ -41,12 +45,14 @@ export default function TimerPractice() {
     setSaving(true);
     try {
       await add({
+        setId,
         moduleId,
         durationSec: finalSec,
         wrongCount,
         totalCount: module.count,
         source: 'timer',
       });
+      setLastSetId(setId); // 记住本次集合编号，下次预填
       reset();
       navigate('/');
     } catch (e) {
@@ -61,15 +67,16 @@ export default function TimerPractice() {
     setPhase('idle');
   };
 
-  // 阶段一：选择模块
+  // 阶段一：选择集合编号 + 模块
   if (phase === 'idle') {
     return (
       <div className="mx-auto max-w-md space-y-5">
+        <SetIdInput value={setId} onChange={setSetId} />
         <ModulePicker value={moduleId} onChange={setModuleId} />
         <Button
           className="w-full"
           size="lg"
-          disabled={!moduleId}
+          disabled={!canStart}
           onClick={handleStart}
         >
           <Play size={18} strokeWidth={2.25} aria-hidden />
@@ -86,7 +93,7 @@ export default function TimerPractice() {
         <div className="text-center">
           <div className="text-base font-semibold text-ink">{module.name}</div>
           <div className="mt-0.5 text-xs tabular-nums text-ink-3">
-            {module.count} 题 · 限时 {formatDuration(module.limitSec)}
+            #{setId} · {module.count} 题 · 限时 {formatDuration(module.limitSec)}
           </div>
         </div>
 

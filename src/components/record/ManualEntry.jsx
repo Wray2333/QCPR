@@ -2,9 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../common/Card.jsx';
 import Button from '../common/Button.jsx';
+import SetIdInput from './SetIdInput.jsx';
 import { MODULES, getModule } from '../../lib/modules.js';
 import { useRecords } from '../../hooks/useRecords.js';
-import { toDateInputValue, toTimeInputValue } from '../../lib/format.js';
+import {
+  toDateInputValue,
+  toTimeInputValue,
+  isValidSetId,
+} from '../../lib/format.js';
+import { getLastSetId, setLastSetId } from '../../lib/lastSetId.js';
 
 const inputClass =
   'w-full min-h-[44px] rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-ink-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand';
@@ -15,6 +21,7 @@ export default function ManualEntry() {
   const navigate = useNavigate();
   const { add } = useRecords();
 
+  const [setId, setSetId] = useState(getLastSetId);
   const [moduleId, setModuleId] = useState(MODULES[0].id);
   const [date, setDate] = useState(toDateInputValue());
   const [time, setTime] = useState(toTimeInputValue());
@@ -29,6 +36,11 @@ export default function ManualEntry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!isValidSetId(setId)) {
+      setError('集合编号应为四位数字');
+      return;
+    }
 
     const min = Math.floor(Number(minutes) || 0);
     const sec = Math.floor(Number(seconds) || 0);
@@ -66,6 +78,7 @@ export default function ManualEntry() {
     setSaving(true);
     try {
       await add({
+        setId,
         moduleId,
         date: dt.toISOString(),
         durationSec,
@@ -73,6 +86,7 @@ export default function ManualEntry() {
         totalCount: module.count,
         source: 'manual',
       });
+      setLastSetId(setId); // 记住本次集合编号，下次预填
       navigate('/');
     } catch (err) {
       // 保存失败留在表单，已填内容不丢失
@@ -84,6 +98,8 @@ export default function ManualEntry() {
   return (
     <Card className="mx-auto max-w-md">
       <form onSubmit={handleSubmit} className="space-y-4">
+        <SetIdInput id="manual-set-id" value={setId} onChange={setSetId} />
+
         <div>
           <label
             htmlFor="manual-module"

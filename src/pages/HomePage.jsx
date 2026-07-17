@@ -1,15 +1,27 @@
+import { useState, useMemo } from 'react';
 import { ChartLine, CloudAlert, RotateCw } from 'lucide-react';
 import { useRecords } from '../hooks/useRecords.js';
 import RecentSummary from '../components/home/RecentSummary.jsx';
 import TrendChart from '../components/home/TrendChart.jsx';
 import WeakModuleAnalysis from '../components/home/WeakModuleAnalysis.jsx';
 import RecentScores from '../components/home/RecentScores.jsx';
+import SetFilter from '../components/home/SetFilter.jsx';
 import DataManager from '../components/home/DataManager.jsx';
 import EmptyState from '../components/common/EmptyState.jsx';
 import Button from '../components/common/Button.jsx';
 
 export default function HomePage() {
   const { records, loading, error, remove, refresh } = useRecords();
+  const [setFilter, setSetFilter] = useState('all');
+
+  // 按集合筛选后的记录，供各分析组件消费
+  const filtered = useMemo(
+    () =>
+      setFilter === 'all'
+        ? records
+        : records.filter((r) => r.setId === setFilter),
+    [records, setFilter]
+  );
 
   // 加载中：静默占位，避免先闪空态再出数据
   if (loading) {
@@ -64,10 +76,11 @@ export default function HomePage() {
 
   return (
     <div className="space-y-4">
-      <RecentSummary records={records} />
-      <TrendChart records={records} />
-      <WeakModuleAnalysis records={records} />
-      <RecentScores records={records} onDelete={handleDelete} />
+      <SetFilter records={records} value={setFilter} onChange={setSetFilter} />
+      <RecentSummary records={filtered} />
+      <TrendChart records={filtered} />
+      <WeakModuleAnalysis records={filtered} />
+      <RecentScores records={filtered} onDelete={handleDelete} />
       <DataManager recordCount={records.length} onImported={refresh} />
     </div>
   );

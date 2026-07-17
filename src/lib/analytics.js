@@ -96,3 +96,12 @@ export function getRecentSummary(records) {
 export function getRecentRecords(records, n = 10) {
   return [...records].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, n);
 }
+
+/** 记录中出现过的集合编号，去重后按数值升序返回 */
+export function getSetIds(records) {
+  const set = new Set();
+  for (const r of records) {
+    if (r.setId) set.add(r.setId);
+  }
+  return [...set].sort((a, b) => Number(a) - Number(b));
+}

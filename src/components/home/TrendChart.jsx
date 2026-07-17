@@ -57,13 +57,20 @@ function CustomTooltip({ active, payload, label, metric }) {
 
 export default function TrendChart({ records }) {
   const { isDark } = useTheme();
-  // 默认显示最近练习过的模块，避免首屏落在无数据模块上
-  const [moduleId, setModuleId] = useState(
-    () => getRecentRecords(records, 1)[0]?.moduleId ?? MODULES[0].id
-  );
+  // null 表示"未手动选择"，跟随记录里最近有数据的模块；
+  // 用户手动选择后记住其选择。
+  const [picked, setPicked] = useState(null);
   const [metric, setMetric] = useState('accuracy');
 
   const colors = CHART_THEME[isDark ? 'dark' : 'light'];
+
+  // 生效模块：优先用户选择；未选或所选模块在当前记录集无数据时，
+  // 回落到最近练习过的模块（切换集合筛选后自动跟随）。
+  const fallbackId = getRecentRecords(records, 1)[0]?.moduleId ?? MODULES[0].id;
+  const pickedHasData =
+    picked && records.some((r) => r.moduleId === picked);
+  const moduleId = pickedHasData ? picked : fallbackId;
+
   const data = getModuleTrend(records, moduleId, metric);
   const module = getModule(moduleId);
   const lineColor = metric === 'accuracy' ? colors.accuracy : colors.duration;
@@ -97,7 +104,7 @@ export default function TrendChart({ records }) {
       {/* 模块切换 */}
       <select
         value={moduleId}
-        onChange={(e) => setModuleId(e.target.value)}
+        onChange={(e) => setPicked(e.target.value)}
         aria-label="选择模块"
         className="min-h-[44px] w-full rounded-xl border border-line bg-surface px-3 py-1.5 text-sm text-ink focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand sm:w-auto"
       >

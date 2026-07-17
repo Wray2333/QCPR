@@ -30,6 +30,9 @@ export default function RecentScores({ records, onDelete }) {
                   <span className="truncate text-sm font-medium text-ink">
                     {m ? m.name : r.moduleId}
                   </span>
+                  <span className="shrink-0 rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] tabular-nums text-ink-2">
+                    {r.setId ? `#${r.setId}` : '未标注'}
+                  </span>
                   {r.source === 'manual' && (
                     <span className="shrink-0 rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-2">
                       补录
