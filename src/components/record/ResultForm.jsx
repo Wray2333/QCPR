@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import Button from '../common/Button.jsx';
 import Card from '../common/Card.jsx';
+import WheelPicker from '../common/WheelPicker.jsx';
+import CollapsibleField from '../common/CollapsibleField.jsx';
 import {
   formatDuration,
   accuracy,
   formatPercent,
   accuracyColorClass,
 } from '../../lib/format.js';
-
-const inputClass =
-  'w-full min-h-[44px] rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-ink-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand';
 
 /**
  * 计时结束后填写本次结果（错题数）。
@@ -27,27 +26,19 @@ export default function ResultForm({
   onCancel,
 }) {
   const [wrongCount, setWrongCount] = useState(0);
-  const rate = accuracy({
-    totalCount: module.count,
-    wrongCount: Number(wrongCount) || 0,
-  });
-
-  const clampAndSet = (v) => {
-    const n = Math.max(0, Math.min(module.count, Math.floor(Number(v) || 0)));
-    setWrongCount(n);
-  };
+  const rate = accuracy({ totalCount: module.count, wrongCount });
 
   return (
     <Card className="space-y-4">
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-surface-2 px-4 py-3">
-          <div className="text-xs text-ink-3">本次用时</div>
-          <div className="mt-0.5 text-lg font-semibold tabular-nums text-ink">
+        <div className="rounded-xl bg-muted px-4 py-3">
+          <div className="text-xs text-muted-foreground">本次用时</div>
+          <div className="mt-0.5 text-lg font-semibold tabular-nums text-foreground">
             {formatDuration(durationSec)}
           </div>
         </div>
-        <div className="rounded-xl bg-surface-2 px-4 py-3">
-          <div className="text-xs text-ink-3">正确率</div>
+        <div className="rounded-xl bg-muted px-4 py-3">
+          <div className="text-xs text-muted-foreground">正确率</div>
           <div
             className={`mt-0.5 text-lg font-semibold tabular-nums ${accuracyColorClass(rate)}`}
           >
@@ -56,24 +47,19 @@ export default function ResultForm({
         </div>
       </div>
 
-      <div>
-        <label
-          htmlFor="result-wrong-count"
-          className="mb-1.5 block text-sm font-medium text-ink-2"
-        >
-          错题数（共 {module.count} 题）
-        </label>
-        <input
-          id="result-wrong-count"
-          type="number"
-          inputMode="numeric"
+      <CollapsibleField
+        label={`错题数（共 ${module.count} 题）`}
+        summary={`${wrongCount} 题`}
+      >
+        <WheelPicker
+          value={wrongCount}
+          onChange={setWrongCount}
           min={0}
           max={module.count}
-          value={wrongCount}
-          onChange={(e) => clampAndSet(e.target.value)}
-          className={inputClass}
+          ariaLabel="错题数"
+          allowInput
         />
-      </div>
+      </CollapsibleField>
 
       <div className="flex gap-3">
         <Button
@@ -89,7 +75,7 @@ export default function ResultForm({
           size="lg"
           className="flex-1"
           disabled={saving}
-          onClick={() => onSubmit(Number(wrongCount) || 0)}
+          onClick={() => onSubmit(wrongCount)}
         >
           {saving ? '保存中…' : '保存成绩'}
         </Button>

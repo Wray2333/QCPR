@@ -3,12 +3,12 @@
 //
 // 注意：README 正文称"分为四部分"，但实际列出 6 个模块，本项目以 6 个模块为准。
 export const MODULES = [
-  { id: 'add_sub_2', name: '两位数加减', count: 20, limitSec: 120 },
   { id: 'mul_2', name: '两位数乘', count: 40, limitSec: 90 },
+  { id: 'add_sub_2', name: '两位数加减', count: 20, limitSec: 120 },
   { id: 'add_sub_3', name: '三位数加减', count: 20, limitSec: 180 },
   { id: 'div_2', name: '除两位', count: 20, limitSec: 60 },
   { id: 'div_3', name: '除三位', count: 20, limitSec: 240 },
-  { id: 'div_4', name: '除四位', count: 20, limitSec: 240 },
+  { id: 'div_4', name: '除四位', count: 20, limitSec: 360 },
 ];
 
 export const MODULE_MAP = Object.fromEntries(MODULES.map((m) => [m.id, m]));

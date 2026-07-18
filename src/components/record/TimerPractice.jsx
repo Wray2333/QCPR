@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Pause, Flag } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import ModulePicker from './ModulePicker.jsx';
 import SetIdInput from './SetIdInput.jsx';
 import Timer from './Timer.jsx';
 import ResultForm from './ResultForm.jsx';
-import Button from '../common/Button.jsx';
 import { useTimer } from '../../hooks/useTimer.js';
 import { useRecords } from '../../hooks/useRecords.js';
+import { useWakeLock } from '../../hooks/useWakeLock.js';
 import { getModule } from '../../lib/modules.js';
 import { formatDuration, isValidSetId } from '../../lib/format.js';
 import { getLastSetId, setLastSetId } from '../../lib/lastSetId.js';
@@ -17,12 +19,19 @@ export default function TimerPractice() {
   const navigate = useNavigate();
   const { add } = useRecords();
   const { elapsedSec, running, start, pause, reset, getElapsedSec } = useTimer();
+  const { request: requestWakeLock, release: releaseWakeLock } = useWakeLock();
 
   const [phase, setPhase] = useState('idle');
   const [setId, setSetId] = useState(getLastSetId);
   const [moduleId, setModuleId] = useState(null);
   const [finalSec, setFinalSec] = useState(0);
   const [saving, setSaving] = useState(false);
+
+  // 计时进行中保持屏幕常亮；暂停/结束/离开时释放
+  useEffect(() => {
+    if (running) requestWakeLock();
+    else releaseWakeLock();
+  }, [running, requestWakeLock, releaseWakeLock]);
 
   const module = moduleId ? getModule(moduleId) : null;
   const canStart = !!moduleId && isValidSetId(setId);
@@ -57,7 +66,7 @@ export default function TimerPractice() {
       navigate('/');
     } catch (e) {
       // 保存失败不跳转，保留结果表单避免丢数据
-      window.alert(`保存失败：${e.message}`);
+      toast.error(`保存失败：${e.message}`);
       setSaving(false);
     }
   };
@@ -91,8 +100,8 @@ export default function TimerPractice() {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-6 pt-4">
         <div className="text-center">
-          <div className="text-base font-semibold text-ink">{module.name}</div>
-          <div className="mt-0.5 text-xs tabular-nums text-ink-3">
+          <div className="text-base font-semibold text-foreground">{module.name}</div>
+          <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
             #{setId} · {module.count} 题 · 限时 {formatDuration(module.limitSec)}
           </div>
         </div>
@@ -120,7 +129,7 @@ export default function TimerPractice() {
         <button
           type="button"
           onClick={handleCancel}
-          className="cursor-pointer rounded-lg px-4 py-2 text-xs text-ink-3 transition-colors hover:text-ink-2"
+          className="cursor-pointer rounded-lg px-4 py-2 text-xs text-muted-foreground transition-colors hover:text-muted-foreground"
         >
           放弃本次
         </button>
@@ -132,7 +141,7 @@ export default function TimerPractice() {
   return (
     <div className="mx-auto max-w-md space-y-4 pt-2">
       <div className="text-center">
-        <span className="text-sm font-medium text-ink-2">
+        <span className="text-sm font-medium text-muted-foreground">
           {module.name} · 记录成绩
         </span>
       </div>

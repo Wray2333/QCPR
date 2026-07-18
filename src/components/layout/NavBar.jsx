@@ -10,7 +10,7 @@ const ITEMS = [
 export function BottomTabBar() {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 pb-safe-b backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 pb-safe-b backdrop-blur md:hidden"
       aria-label="主导航"
     >
       <div className="mx-auto flex h-16 max-w-md">
@@ -21,7 +21,7 @@ export function BottomTabBar() {
             end={end}
             className={({ isActive }) =>
               `flex flex-1 cursor-pointer flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors duration-200 ${
-                isActive ? 'text-brand' : 'text-ink-3 hover:text-ink-2'
+                isActive ? 'text-primary' : 'text-muted-foreground hover:text-muted-foreground'
               }`
             }
           >
@@ -50,8 +50,8 @@ export function TopNav() {
           className={({ isActive }) =>
             `flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-200 ${
               isActive
-                ? 'bg-brand/10 text-brand'
-                : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
+                ? 'bg-primary/10 text-primary'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`
           }
         >

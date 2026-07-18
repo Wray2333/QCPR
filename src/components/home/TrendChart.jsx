@@ -8,7 +8,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import Card from '../common/Card.jsx';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import { MODULES, getModule } from '../../lib/modules.js';
 import { getModuleTrend, getRecentRecords } from '../../lib/analytics.js';
 import { useTheme } from '../../hooks/useTheme.jsx';
@@ -25,13 +33,13 @@ const CHART_THEME = {
   light: {
     grid: '#E7E5E4', // stone-200
     tick: '#A8A29E', // stone-400
-    accuracy: '#DC2626', // 品牌红
+    accuracy: '#0D9488', // 品牌青碧 teal-600
     duration: '#2563EB', // blue-600
   },
   dark: {
     grid: '#292524', // stone-800
     tick: '#78716C', // stone-500
-    accuracy: '#F87171', // red-400
+    accuracy: '#2DD4BF', // teal-400
     duration: '#60A5FA', // blue-400
   },
 };
@@ -45,10 +53,10 @@ function CustomTooltip({ active, payload, label, metric }) {
   if (!active || !payload || !payload.length) return null;
   const v = payload[0].value;
   return (
-    <div className="rounded-xl border border-line bg-surface px-3 py-2 text-xs shadow-sm">
+    <div className="rounded-xl border border-border bg-card px-3 py-2 text-xs shadow-sm">
       {/* 显示到分钟，同一天多次练习可区分 */}
-      <div className="text-ink-3">{formatShortDateTime(label)}</div>
-      <div className="mt-0.5 font-semibold tabular-nums text-ink">
+      <div className="text-muted-foreground">{formatShortDateTime(label)}</div>
+      <div className="mt-0.5 font-semibold tabular-nums text-foreground">
         {metric === 'accuracy' ? formatPercent(v) : formatDuration(v)}
       </div>
     </div>
@@ -79,44 +87,37 @@ export default function TrendChart({ records }) {
     metric === 'accuracy' ? formatPercent(v) : formatDuration(v);
 
   return (
-    <Card className="space-y-3">
+    <Card className="space-y-3 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-ink">进步趋势</h2>
+        <h2 className="text-base font-semibold text-foreground">进步趋势</h2>
         {/* 指标切换 */}
-        <div className="flex gap-1 rounded-xl bg-surface-2 p-1">
-          {METRICS.map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => setMetric(m.key)}
-              className={`min-h-[36px] cursor-pointer rounded-lg px-3 text-xs font-medium transition-all duration-200 ${
-                metric === m.key
-                  ? 'bg-surface text-ink shadow-sm'
-                  : 'text-ink-2 hover:text-ink'
-              }`}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <Tabs value={metric} onValueChange={setMetric}>
+          <TabsList className="h-9">
+            {METRICS.map((m) => (
+              <TabsTrigger key={m.key} value={m.key} className="text-xs">
+                {m.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* 模块切换 */}
-      <select
-        value={moduleId}
-        onChange={(e) => setPicked(e.target.value)}
-        aria-label="选择模块"
-        className="min-h-[44px] w-full rounded-xl border border-line bg-surface px-3 py-1.5 text-sm text-ink focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand sm:w-auto"
-      >
-        {MODULES.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.name}
-          </option>
-        ))}
-      </select>
+      <Select value={moduleId} onValueChange={setPicked}>
+        <SelectTrigger aria-label="选择模块" className="w-full sm:w-44">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {MODULES.map((m) => (
+            <SelectItem key={m.id} value={m.id}>
+              {m.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       {data.length === 0 ? (
-        <div className="flex h-56 items-center justify-center text-sm text-ink-3">
+        <div className="flex h-56 items-center justify-center text-sm text-muted-foreground">
           「{module.name}」暂无练习记录
         </div>
       ) : (

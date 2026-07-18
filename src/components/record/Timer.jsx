@@ -32,7 +32,7 @@ export default function Timer({ elapsedSec, limitSec }) {
           r={R}
           fill="none"
           strokeWidth={STROKE}
-          className="stroke-surface-2"
+          className="stroke-muted"
         />
         {/* 进度环：剩余弧 */}
         <circle
@@ -46,7 +46,7 @@ export default function Timer({ elapsedSec, limitSec }) {
           strokeDashoffset={dashOffset}
           stroke="currentColor"
           className={`transition-[stroke-dashoffset] duration-1000 ease-linear ${
-            overtime ? 'text-danger' : 'text-brand'
+            overtime ? 'text-destructive' : 'text-primary'
           }`}
         />
       </svg>
@@ -55,14 +55,14 @@ export default function Timer({ elapsedSec, limitSec }) {
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
           className={`text-6xl font-bold tabular-nums tracking-tight transition-colors duration-200 ${
-            overtime ? 'text-danger' : 'text-ink'
+            overtime ? 'text-destructive' : 'text-foreground'
           }`}
         >
           {formatDuration(elapsedSec)}
         </span>
         <span
           className={`mt-2 text-sm tabular-nums ${
-            overtime ? 'font-medium text-danger' : 'text-ink-3'
+            overtime ? 'font-medium text-destructive' : 'text-muted-foreground'
           }`}
         >
           {overtime

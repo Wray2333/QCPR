@@ -1,32 +1,73 @@
+import tailwindcssAnimate from 'tailwindcss-animate';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
-      // 语义色 token —— 具体值由 src/styles/index.css 中的 CSS 变量提供（light/dark 双套）
+      // shadcn/ui 标准语义色映射 —— 具体值由 src/styles/index.css 的 HSL 变量提供
       colors: {
-        bg: 'rgb(var(--c-bg) / <alpha-value>)',
-        surface: 'rgb(var(--c-surface) / <alpha-value>)',
-        'surface-2': 'rgb(var(--c-surface-2) / <alpha-value>)',
-        line: 'rgb(var(--c-line) / <alpha-value>)',
-        ink: 'rgb(var(--c-ink) / <alpha-value>)',
-        'ink-2': 'rgb(var(--c-ink-2) / <alpha-value>)',
-        'ink-3': 'rgb(var(--c-ink-3) / <alpha-value>)',
-        brand: 'rgb(var(--c-brand) / <alpha-value>)',
-        'on-brand': 'rgb(var(--c-on-brand) / <alpha-value>)',
-        success: 'rgb(var(--c-success) / <alpha-value>)',
-        warning: 'rgb(var(--c-warning) / <alpha-value>)',
-        danger: 'rgb(var(--c-danger) / <alpha-value>)',
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        // 业务扩展语义色
+        success: 'hsl(var(--success))',
+        warning: 'hsl(var(--warning))',
       },
       borderRadius: {
-        xl: '0.875rem',
-        '2xl': '1.25rem',
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
       spacing: {
         'safe-b': 'env(safe-area-inset-bottom)',
       },
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+      },
     },
   },
-  plugins: [],
+  plugins: [tailwindcssAnimate],
 };

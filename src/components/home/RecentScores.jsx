@@ -1,5 +1,17 @@
 import { X } from 'lucide-react';
-import Card from '../common/Card.jsx';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 import { getModule } from '../../lib/modules.js';
 import { getRecentRecords } from '../../lib/analytics.js';
 import {
@@ -11,14 +23,17 @@ import {
   accuracyColorClass,
 } from '../../lib/format.js';
 
-/** 近期成绩列表 */
+/**
+ * 近期成绩列表。
+ * @param {(id:string)=>Promise<void>} onDelete 执行删除（确认由本组件的 AlertDialog 负责）
+ */
 export default function RecentScores({ records, onDelete }) {
   const recent = getRecentRecords(records, 10);
 
   return (
-    <Card>
-      <h2 className="mb-3 text-base font-semibold text-ink">近期成绩</h2>
-      <ul className="divide-y divide-line">
+    <Card className="p-4">
+      <h2 className="mb-3 text-base font-semibold text-foreground">近期成绩</h2>
+      <ul className="divide-y divide-border">
         {recent.map((r) => {
           const m = getModule(r.moduleId);
           const rate = accuracy(r);
@@ -27,19 +42,19 @@ export default function RecentScores({ records, onDelete }) {
             <li key={r.id} className="flex items-center gap-3 py-2.5">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="truncate text-sm font-medium text-ink">
+                  <span className="truncate text-sm font-medium text-foreground">
                     {m ? m.name : r.moduleId}
                   </span>
-                  <span className="shrink-0 rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] tabular-nums text-ink-2">
+                  <Badge variant="secondary" className="shrink-0 tabular-nums">
                     {r.setId ? `#${r.setId}` : '未标注'}
-                  </span>
+                  </Badge>
                   {r.source === 'manual' && (
-                    <span className="shrink-0 rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-2">
+                    <Badge variant="outline" className="shrink-0">
                       补录
-                    </span>
+                    </Badge>
                   )}
                 </div>
-                <span className="text-xs tabular-nums text-ink-3">
+                <span className="text-xs tabular-nums text-muted-foreground">
                   {formatDateTime(r.date)}
                 </span>
               </div>
@@ -50,21 +65,43 @@ export default function RecentScores({ records, onDelete }) {
                   {formatPercent(rate)}
                 </div>
                 <div
-                  className={`text-xs tabular-nums ${over ? 'text-danger' : 'text-ink-3'}`}
+                  className={`text-xs tabular-nums ${over ? 'text-destructive' : 'text-muted-foreground'}`}
                 >
                   {formatDuration(r.durationSec)}
                 </div>
               </div>
               {onDelete && (
-                <button
-                  type="button"
-                  onClick={() => onDelete(r.id)}
-                  className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-ink-3 transition-colors duration-200 hover:bg-danger/10 hover:text-danger"
-                  title="删除该记录"
-                  aria-label="删除该记录"
-                >
-                  <X size={16} strokeWidth={2} aria-hidden />
-                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      title="删除该记录"
+                      aria-label="删除该记录"
+                    >
+                      <X size={16} strokeWidth={2} aria-hidden />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>删除该记录？</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {m ? m.name : r.moduleId}
+                        {r.setId ? ` · #${r.setId}` : ''} · {formatDateTime(r.date)}
+                        ，删除后不可恢复。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDelete(r.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        删除
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </li>
           );

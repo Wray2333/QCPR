@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { ThemeProvider } from './hooks/useTheme.jsx';
+import { Toaster } from '@/components/ui/sonner';
 import './styles/index.css';
 
 createRoot(document.getElementById('root')).render(
@@ -11,6 +12,7 @@ createRoot(document.getElementById('root')).render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
+      <Toaster position="top-center" />
     </ThemeProvider>
   </StrictMode>
 );

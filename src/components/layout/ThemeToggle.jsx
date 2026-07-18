@@ -10,7 +10,7 @@ export default function ThemeToggle() {
       onClick={toggle}
       aria-label={isDark ? '切换到浅色模式' : '切换到深色模式'}
       title={isDark ? '切换到浅色模式' : '切换到深色模式'}
-      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-ink-2 transition-colors duration-200 hover:bg-surface-2 hover:text-ink"
+      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
     >
       {isDark ? (
         <Sun size={20} strokeWidth={1.75} aria-hidden />

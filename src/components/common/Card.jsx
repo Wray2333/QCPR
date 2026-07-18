@@ -1,10 +1,11 @@
-export default function Card({ className = '', children, ...props }) {
+import { Card as UiCard } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+// 兼容层：旧调用 <Card className>children</Card>，内部用 shadcn Card + 默认内边距。
+export default function Card({ className, children, ...props }) {
   return (
-    <div
-      className={`rounded-2xl border border-line bg-surface p-4 transition-colors duration-200 ${className}`}
-      {...props}
-    >
+    <UiCard className={cn('p-4', className)} {...props}>
       {children}
-    </div>
+    </UiCard>
   );
 }

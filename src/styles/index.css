@@ -3,61 +3,89 @@
 @tailwind utilities;
 
 /*
- * 语义色 token（RGB 三元组，供 tailwind.config.js 以 rgb(var(--x) / alpha) 引用）
- * 设计基调：番茄钟式「专注红」+ 暖石灰中性阶，深浅两套独立调校（非简单反色）
+ * shadcn/ui 主题变量（HSL）。设计基调保留：青碧 primary + 暖石灰(stone)中性阶 + 红 destructive。
+ * light/dark 双套；青碧 = teal，警示红独立于 primary。
  */
-:root {
-  color-scheme: light;
-  --c-bg: 250 250 249; /* stone-50 */
-  --c-surface: 255 255 255;
-  --c-surface-2: 245 245 244; /* stone-100 */
-  --c-line: 231 229 228; /* stone-200 */
-  --c-ink: 28 25 23; /* stone-900 */
-  --c-ink-2: 87 83 78; /* stone-600 */
-  --c-ink-3: 168 162 158; /* stone-400 */
-  --c-brand: 220 38 38; /* red-600 —— 专注红 */
-  --c-on-brand: 255 255 255;
-  --c-success: 5 150 105; /* emerald-600 */
-  --c-warning: 217 119 6; /* amber-600 */
-  --c-danger: 220 38 38; /* red-600 */
+@layer base {
+  :root {
+    --background: 60 9% 98%; /* stone-50 */
+    --foreground: 20 14% 10%; /* stone-900 */
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+    --primary: 173 80% 32%; /* teal-600 青碧 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 5% 96%; /* stone-100 */
+    --secondary-foreground: 24 10% 10%;
+    --muted: 60 5% 96%; /* stone-100 */
+    --muted-foreground: 25 5% 45%; /* stone-500/600 */
+    --accent: 60 5% 96%;
+    --accent-foreground: 24 10% 10%;
+    --destructive: 0 72% 51%; /* red-600 —— 仅警示 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 6% 90%; /* stone-200 */
+    --input: 20 6% 90%;
+    --ring: 173 80% 32%; /* 聚焦环 = 青碧 */
+    --radius: 0.75rem;
+    /* 业务扩展语义色（正确率/超时等） */
+    --success: 161 94% 30%; /* emerald-600 */
+    --warning: 32 95% 44%; /* amber-600 */
+  }
+
+  .dark {
+    --background: 20 14% 4%; /* stone-950 */
+    --foreground: 60 9% 98%;
+    --card: 20 14% 10%; /* stone-900 */
+    --card-foreground: 60 9% 98%;
+    --popover: 20 14% 10%;
+    --popover-foreground: 60 9% 98%;
+    --primary: 172 66% 50%; /* teal-400 暗底提亮 */
+    --primary-foreground: 180 85% 8%; /* teal-950 */
+    --secondary: 12 6% 15%; /* stone-800 */
+    --secondary-foreground: 60 9% 98%;
+    --muted: 12 6% 15%;
+    --muted-foreground: 24 5% 64%; /* stone-400 */
+    --accent: 12 6% 15%;
+    --accent-foreground: 60 9% 98%;
+    --destructive: 0 91% 71%; /* red-400 */
+    --destructive-foreground: 20 14% 4%;
+    --border: 12 6% 15%; /* stone-800 */
+    --input: 12 6% 15%;
+    --ring: 172 66% 50%;
+    --success: 158 64% 52%; /* emerald-400 */
+    --warning: 43 96% 56%; /* amber-400 */
+  }
 }
 
-.dark {
-  color-scheme: dark;
-  --c-bg: 12 10 9; /* stone-950 */
-  --c-surface: 28 25 23; /* stone-900 */
-  --c-surface-2: 41 37 36; /* stone-800 */
-  --c-line: 41 37 36; /* stone-800 */
-  --c-ink: 250 250 249; /* stone-50 */
-  --c-ink-2: 168 162 158; /* stone-400 */
-  --c-ink-3: 120 113 108; /* stone-500 */
-  --c-brand: 248 113 113; /* red-400 —— 暗底提亮，保证对比 */
-  --c-on-brand: 69 10 10; /* red-950 */
-  --c-success: 52 211 153; /* emerald-400 */
-  --c-warning: 251 191 36; /* amber-400 */
-  --c-danger: 248 113 113; /* red-400 */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+      Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
-html,
-body,
-#root {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  background-color: rgb(var(--c-bg));
-  color: rgb(var(--c-ink));
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
-}
-
-/* 键盘可达性：统一 focus 环 */
-:focus-visible {
-  outline: 2px solid rgb(var(--c-brand));
-  outline-offset: 2px;
+/*
+ * 主题切换整屏同步渐变：语义色属性统一时长/曲线，避免各层先后变色出现边缘。
+ */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    outline-color, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
 }
 
 /* 尊重系统减弱动效设置 */
@@ -69,4 +97,13 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* 拨轮：隐藏滚动条但保留滚动能力 */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

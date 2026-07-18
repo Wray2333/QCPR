@@ -20,14 +20,14 @@ export default function ModulePicker({ value, onChange }) {
             onClick={() => onChange(m.id)}
             className={`flex min-h-[64px] cursor-pointer flex-col items-start justify-center rounded-xl border p-3 text-left transition-all duration-200 active:scale-[0.97] ${
               active
-                ? 'border-brand bg-brand/10 ring-1 ring-brand'
-                : 'border-line bg-surface hover:border-ink-3'
+                ? 'border-primary bg-primary/10 ring-1 ring-ring'
+                : 'border-border bg-card hover:border-muted-foreground'
             }`}
           >
-            <span className={`text-sm font-semibold ${active ? 'text-brand' : 'text-ink'}`}>
+            <span className={`text-sm font-semibold ${active ? 'text-primary' : 'text-foreground'}`}>
               {m.name}
             </span>
-            <span className="mt-0.5 text-xs tabular-nums text-ink-3">
+            <span className="mt-0.5 text-xs tabular-nums text-muted-foreground">
               {m.count} 题 · {formatDuration(m.limitSec)}
             </span>
           </button>

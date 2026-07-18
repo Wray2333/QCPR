@@ -1,5 +1,9 @@
 import { useState, useMemo } from 'react';
-import { ChartLine, CloudAlert, RotateCw } from 'lucide-react';
+import { CloudAlert, RotateCw } from 'lucide-react';
+import { ChartLine } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRecords } from '../hooks/useRecords.js';
 import RecentSummary from '../components/home/RecentSummary.jsx';
 import TrendChart from '../components/home/TrendChart.jsx';
@@ -8,7 +12,6 @@ import RecentScores from '../components/home/RecentScores.jsx';
 import SetFilter from '../components/home/SetFilter.jsx';
 import DataManager from '../components/home/DataManager.jsx';
 import EmptyState from '../components/common/EmptyState.jsx';
-import Button from '../components/common/Button.jsx';
 
 export default function HomePage() {
   const { records, loading, error, remove, refresh } = useRecords();
@@ -23,11 +26,17 @@ export default function HomePage() {
     [records, setFilter]
   );
 
-  // 加载中：静默占位，避免先闪空态再出数据
+  // 加载中：骨架占位，避免先闪空态再出数据
   if (loading) {
     return (
-      <div className="flex justify-center pt-16 text-sm text-ink-3" role="status">
-        加载中…
+      <div className="space-y-4" role="status" aria-label="加载中">
+        <div className="grid grid-cols-3 gap-3">
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-24 rounded-2xl" />
+        </div>
+        <Skeleton className="h-64 rounded-2xl" />
+        <Skeleton className="h-40 rounded-2xl" />
       </div>
     );
   }
@@ -35,12 +44,12 @@ export default function HomePage() {
   if (error) {
     return (
       <div className="flex flex-col items-center gap-4 pt-12 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-2 text-danger">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-destructive">
           <CloudAlert size={28} strokeWidth={1.5} aria-hidden />
         </div>
         <div>
-          <p className="text-base font-semibold text-ink">数据加载失败</p>
-          <p className="mt-1 text-sm text-ink-2">{error}</p>
+          <p className="text-base font-semibold text-foreground">数据加载失败</p>
+          <p className="mt-1 text-sm text-muted-foreground">{error}</p>
         </div>
         <Button variant="secondary" onClick={refresh}>
           <RotateCw size={15} strokeWidth={2} aria-hidden />
@@ -66,11 +75,12 @@ export default function HomePage() {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm('确定删除该记录吗？')) return;
+    // 确认由 RecentScores 的 AlertDialog 负责，这里直接执行
     try {
       await remove(id);
+      toast.success('已删除');
     } catch (e) {
-      window.alert(`删除失败：${e.message}`);
+      toast.error(`删除失败：${e.message}`);
     }
   };
 
