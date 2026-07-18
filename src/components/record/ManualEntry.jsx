@@ -14,15 +14,13 @@ import {
 } from '@/components/ui/select';
 import SetIdInput from './SetIdInput.jsx';
 import DurationPicker from './DurationPicker.jsx';
-import WheelPicker from '../common/WheelPicker.jsx';
-import CollapsibleField from '../common/CollapsibleField.jsx';
+import { NativeSelect } from '@/components/ui/native-select';
 import { MODULES, getModule } from '../../lib/modules.js';
 import { useRecords } from '../../hooks/useRecords.js';
 import {
   toDateInputValue,
   toTimeInputValue,
   isValidSetId,
-  formatDuration,
 } from '../../lib/format.js';
 import { getLastSetId, setLastSetId } from '../../lib/lastSetId.js';
 
@@ -143,23 +141,26 @@ export default function ManualEntry() {
           </div>
         </div>
 
-        <CollapsibleField label="用时" summary={formatDuration(durationSec)}>
+        <div className="space-y-1.5">
+          <Label>用时</Label>
           <DurationPicker valueSec={durationSec} onChange={setDurationSec} />
-        </CollapsibleField>
+        </div>
 
-        <CollapsibleField
-          label={`错题数（共 ${module.count} 题）`}
-          summary={`${wrongCount} 题`}
-        >
-          <WheelPicker
+        <div className="space-y-1.5">
+          <Label htmlFor="manual-wrong">错题数（共 {module.count} 题）</Label>
+          <NativeSelect
+            id="manual-wrong"
             value={wrongCount}
-            onChange={setWrongCount}
-            min={0}
-            max={module.count}
-            ariaLabel="错题数"
-            allowInput
-          />
-        </CollapsibleField>
+            onChange={(e) => setWrongCount(Number(e.target.value))}
+            className="tabular-nums"
+          >
+            {Array.from({ length: module.count + 1 }, (_, i) => i).map((n) => (
+              <option key={n} value={n}>
+                {n} 题
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
 
         {error && (
           <p className="text-sm text-destructive" role="alert">

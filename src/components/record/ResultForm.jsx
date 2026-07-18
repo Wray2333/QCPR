@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import Button from '../common/Button.jsx';
-import Card from '../common/Card.jsx';
-import WheelPicker from '../common/WheelPicker.jsx';
-import CollapsibleField from '../common/CollapsibleField.jsx';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { NativeSelect } from '@/components/ui/native-select';
 import {
   formatDuration,
   accuracy,
@@ -29,7 +29,7 @@ export default function ResultForm({
   const rate = accuracy({ totalCount: module.count, wrongCount });
 
   return (
-    <Card className="space-y-4">
+    <Card className="space-y-4 p-4">
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-xl bg-muted px-4 py-3">
           <div className="text-xs text-muted-foreground">本次用时</div>
@@ -47,19 +47,21 @@ export default function ResultForm({
         </div>
       </div>
 
-      <CollapsibleField
-        label={`错题数（共 ${module.count} 题）`}
-        summary={`${wrongCount} 题`}
-      >
-        <WheelPicker
+      <div className="space-y-1.5">
+        <Label htmlFor="result-wrong">错题数（共 {module.count} 题）</Label>
+        <NativeSelect
+          id="result-wrong"
           value={wrongCount}
-          onChange={setWrongCount}
-          min={0}
-          max={module.count}
-          ariaLabel="错题数"
-          allowInput
-        />
-      </CollapsibleField>
+          onChange={(e) => setWrongCount(Number(e.target.value))}
+          className="tabular-nums"
+        >
+          {Array.from({ length: module.count + 1 }, (_, i) => i).map((n) => (
+            <option key={n} value={n}>
+              {n} 题
+            </option>
+          ))}
+        </NativeSelect>
+      </div>
 
       <div className="flex gap-3">
         <Button
@@ -83,3 +85,4 @@ export default function ResultForm({
     </Card>
   );
 }
+

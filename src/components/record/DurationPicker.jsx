@@ -1,49 +1,35 @@
-import WheelPicker from '../common/WheelPicker.jsx';
+import { Input } from '@/components/ui/input';
+
+const pad2 = (v) => String(v).padStart(2, '0');
 
 /**
- * 用时选择器：分（0–59）+ 秒（0–59）双拨轮，对外以总秒数交互。
+ * 用时选择器：复用原生 `<input type="time">`（与"练习时间"同款控件）。
+ * 把时间控件的"时:分"两个滚轮映射为用时的"分:秒"——点一下弹出单个原生选择器，
+ * 分、秒在同一弹窗里分开选。iOS 上渲染为系统原生滚轮。
+ * 分钟上限 59（time 控件小时槽 0–59 不适用，实际按 0–59 分钟；速算用时远小于此）。
  * @param {number} valueSec 当前总秒数
- * @param {(updater:(prevSec:number)=>number)|(totalSec:number)=>void} onChange
- *        建议传入支持函数式更新的 setter（如 useState 的 setter），
- *        以避免分、秒拨轮相近时刻回调时相互覆盖。
+ * @param {(totalSec:number)=>void} onChange
  */
 export default function DurationPicker({ valueSec, onChange }) {
   const minutes = Math.floor(valueSec / 60);
   const seconds = valueSec % 60;
+  // type=time 小时槽为 0–23，速算用时（≤ 6 分钟 + 超时）远在范围内
+  const value = `${pad2(minutes)}:${pad2(seconds)}`;
 
-  // 用函数式更新读取最新值，避免分/秒两个拨轮基于同一快照相互覆盖
-  const setMinutes = (m) => onChange((prev) => m * 60 + (prev % 60));
-  const setSeconds = (s) => onChange((prev) => Math.floor(prev / 60) * 60 + s);
-
-  const pad2 = (v) => String(v).padStart(2, '0');
+  const handleChange = (e) => {
+    const v = e.target.value; // "MM:SS" 或 ""
+    if (!v) return onChange(0);
+    const [m, s] = v.split(':').map((x) => Number(x) || 0);
+    onChange(m * 60 + s);
+  };
 
   return (
-    <div className="flex items-stretch justify-center gap-3 rounded-xl border border-border bg-card p-2">
-      <div className="flex-1">
-        <div className="mb-1 text-center text-xs text-muted-foreground">分</div>
-        <WheelPicker
-          value={minutes}
-          onChange={setMinutes}
-          min={0}
-          max={59}
-          formatLabel={pad2}
-          ariaLabel="用时（分钟）"
-          allowInput
-        />
-      </div>
-      <div className="flex items-center pt-5 text-xl font-semibold text-muted-foreground">:</div>
-      <div className="flex-1">
-        <div className="mb-1 text-center text-xs text-muted-foreground">秒</div>
-        <WheelPicker
-          value={seconds}
-          onChange={setSeconds}
-          min={0}
-          max={59}
-          formatLabel={pad2}
-          ariaLabel="用时（秒）"
-          allowInput
-        />
-      </div>
-    </div>
+    <Input
+      type="time"
+      value={value}
+      onChange={handleChange}
+      aria-label="用时（分:秒）"
+      className="tabular-nums"
+    />
   );
 }
