@@ -29,7 +29,7 @@ export default function DurationPicker({ valueSec, onChange }) {
       value={value}
       onChange={handleChange}
       aria-label="用时（分:秒）"
-      className="tabular-nums"
+      className="w-28 tabular-nums"
     />
   );
 }

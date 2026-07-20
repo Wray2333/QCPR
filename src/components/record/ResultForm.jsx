@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { NativeSelect } from '@/components/ui/native-select';
+import WrongCountPicker from './WrongCountPicker.jsx';
 import {
   formatDuration,
   accuracy,
@@ -49,18 +49,12 @@ export default function ResultForm({
 
       <div className="space-y-1.5">
         <Label htmlFor="result-wrong">错题数（共 {module.count} 题）</Label>
-        <NativeSelect
+        <WrongCountPicker
           id="result-wrong"
           value={wrongCount}
-          onChange={(e) => setWrongCount(Number(e.target.value))}
-          className="tabular-nums"
-        >
-          {Array.from({ length: module.count + 1 }, (_, i) => i).map((n) => (
-            <option key={n} value={n}>
-              {n} 题
-            </option>
-          ))}
-        </NativeSelect>
+          onChange={setWrongCount}
+          max={module.count}
+        />
       </div>
 
       <div className="flex gap-3">

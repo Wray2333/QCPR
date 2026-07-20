@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import SetIdInput from './SetIdInput.jsx';
 import DurationPicker from './DurationPicker.jsx';
-import { NativeSelect } from '@/components/ui/native-select';
+import WrongCountPicker from './WrongCountPicker.jsx';
 import { MODULES, getModule } from '../../lib/modules.js';
 import { useRecords } from '../../hooks/useRecords.js';
 import {
@@ -124,19 +124,21 @@ export default function ManualEntry() {
 
         <div className="space-y-1.5">
           <Label htmlFor="manual-date">练习日期与时间</Label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex gap-2">
             <Input
               id="manual-date"
               type="date"
               value={date}
               max={toDateInputValue()}
               onChange={(e) => setDate(e.target.value)}
+              className="flex-1"
             />
             <Input
               type="time"
               aria-label="练习时间"
               value={time}
               onChange={(e) => setTime(e.target.value)}
+              className="w-28 shrink-0"
             />
           </div>
         </div>
@@ -148,18 +150,12 @@ export default function ManualEntry() {
 
         <div className="space-y-1.5">
           <Label htmlFor="manual-wrong">错题数（共 {module.count} 题）</Label>
-          <NativeSelect
+          <WrongCountPicker
             id="manual-wrong"
             value={wrongCount}
-            onChange={(e) => setWrongCount(Number(e.target.value))}
-            className="tabular-nums"
-          >
-            {Array.from({ length: module.count + 1 }, (_, i) => i).map((n) => (
-              <option key={n} value={n}>
-                {n} 题
-              </option>
-            ))}
-          </NativeSelect>
+            onChange={setWrongCount}
+            max={module.count}
+          />
         </div>
 
         {error && (
