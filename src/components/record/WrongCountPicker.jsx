@@ -1,7 +1,7 @@
 import { NativeSelect } from '@/components/ui/native-select';
 import { cn } from '@/lib/utils';
 
-const QUICK = [0, 1, 2, 3, 4, 5]; // 常用错题数，一键快选
+const QUICK = [0, 1, 2, 3]; // 常用错题数，一键快选
 
 /**
  * 错题数选择：快捷按钮（0–5，覆盖绝大多数情况）+ 原生 select 兜底选更大值

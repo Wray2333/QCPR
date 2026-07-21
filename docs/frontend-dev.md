@@ -159,7 +159,7 @@ QCPR/
    │  │  ├─ TimerPractice.jsx  # 一键计时练习（含 Wake Lock）
    │  │  ├─ Timer.jsx          # 番茄钟圆环计时展示
    │  │  ├─ ResultForm.jsx     # 结束后填错题数（WrongCountPicker）
-   │  │  ├─ WrongCountPicker.jsx # 错题数：快捷 0–5 + 原生 select
+   │  │  ├─ WrongCountPicker.jsx # 错题数：快捷 0–3 + 原生 select
    │  │  ├─ DurationPicker.jsx # 用时：input type=time（分:秒 同一弹窗）
    │  │  └─ ManualEntry.jsx    # 手动补录表单
    │  └─ ui/                   # shadcn/ui 组件（button/card/tabs/select/input/…）
@@ -433,7 +433,7 @@ export default function App() {
    │  · 模块（下拉，来自 MODULES）
    │  · 日期 + 时间（默认当前时刻，可改；精确到分钟，支持一天多次练习）
    │  · 用时（DurationPicker：复用 `<input type="time">`，分:秒在同一弹窗选）
-   │  · 错题数（WrongCountPicker：快捷按钮 0–5 一键选 + 原生 select 兜底大值）
+   │  · 错题数（WrongCountPicker：快捷按钮 0–3 一键选 + 原生 select 兜底大值）
    ▼
 校验（集合编号为四位数字、错题数 ≤ 题量、用时 > 0、日期时间合法且不晚于当前）
    ▼
@@ -442,7 +442,7 @@ export default function App() {
 
 > **集合筛选（主页）**：`HomePage` 顶部提供集合筛选器（`SetFilter`，多于一个集合时才显示），选择后过滤记录传给概览、趋势图、弱模块与列表。趋势图在所选模块于当前集合无数据时，自动回落到最近有数据的模块。
 
-> **原生控件录入**：错题数用 **WrongCountPicker**——快捷按钮 0–5（覆盖绝大多数情况，一键选中）+ **原生 `<select>`** 兜底选更大值（`ui/native-select.jsx` 套 shadcn 外观，选中值双向同步）；用时用 **`<input type="time">`**（与"练习时间"同款控件），把时间控件的"时:分"两个滚轮映射为用时的"分:秒"——分、秒在**同一个原生弹窗**里分开选，`02:35` 即 2 分 35 秒，对外以总秒数交互。关键动机：**iOS Safari 将原生 select 与 time 控件都渲染为系统原生滚轮**，移动端录入体验最佳；时间/用时输入框限宽（`w-28`），避免 iOS 全宽居中显得空旷。
+> **原生控件录入**：错题数用 **WrongCountPicker**——快捷按钮 0–3（覆盖绝大多数情况，一键选中）+ **原生 `<select>`** 兜底选更大值（`ui/native-select.jsx` 套 shadcn 外观，选中值双向同步）；用时用 **`<input type="time">`**（与"练习时间"同款控件），把时间控件的"时:分"两个滚轮映射为用时的"分:秒"——分、秒在**同一个原生弹窗**里分开选，`02:35` 即 2 分 35 秒，对外以总秒数交互。关键动机：**iOS Safari 将原生 select 与 time 控件都渲染为系统原生滚轮**，移动端录入体验最佳；时间/用时输入框限宽（`w-28`），避免 iOS 全宽居中显得空旷。
 
 ### 8.4 防息屏（Wake Lock）
 
