@@ -154,11 +154,11 @@ QCPR/
    │  │  ├─ TrendChart.jsx     # 进步趋势图（Recharts）
    │  │  └─ WeakModuleAnalysis.jsx  # 弱模块分析
    │  ├─ record/
-   │  │  ├─ ModulePicker.jsx   # 模块选择
+   │  │  ├─ ModulePicker.jsx   # 模块有序多选 + 常用组合
    │  │  ├─ SetIdInput.jsx     # 集合编号输入（四位数字）
    │  │  ├─ TimerPractice.jsx  # 一键计时练习（含 Wake Lock）
    │  │  ├─ Timer.jsx          # 番茄钟圆环计时展示
-   │  │  ├─ ResultForm.jsx     # 结束后填错题数（WrongCountPicker）
+   │  │  ├─ ResultForm.jsx     # 结束后逐模块填错题数（WrongCountPicker）
    │  │  ├─ WrongCountPicker.jsx # 错题数：快捷 0–3 + 原生 select
    │  │  ├─ DurationPicker.jsx # 用时：input type=time（分:秒 同一弹窗）
    │  │  └─ ManualEntry.jsx    # 手动补录表单
@@ -393,37 +393,40 @@ export default function App() {
 
 ## 8. 核心交互流程
 
-### 8.1 一键计时练习
+### 8.1 一键计时练习（连续计时）
+
+同一页纸上的多个模块（如「两位数乘 + 两位数加减」）连续计时，做完一起拍照查错，再统一填错题数。
 
 ```
-填写集合编号 (SetIdInput) + 选择模块 (ModulePicker)
+填写集合编号 (SetIdInput) + 有序多选模块 (ModulePicker)
    │  · 集合编号：四位数字，必填，预填上次值（qcpr:lastSetId）
-   │  · 集合编号合法且选了模块，「开始」才可用
+   │  · 模块按点选顺序计时（卡片角标显示序号）；常用组合见 MODULE_GROUPS，一键选中
+   │  · 预选上次的模块序列（qcpr:lastModules）
    ▼
-点击「开始」
+点击「开始计时」
    │
    ▼
-计时中 (Timer)
-   │  · 番茄钟式圆环 + 大号计时（已用时 / 剩余时间）
-   │  · 顶部显示 #集合编号 · 题量 · 限时
-   │  · 超过 limitSec 后圆环与数字转警示色（不强制结束）
-   │  · 支持暂停 / 继续
+计时中 (Timer + PracticeSteps)
+   │  · 番茄钟式圆环 + 大号计时；顶部进度条显示已完成项及用时
+   │  · 「下一项」：记下本项用时并立即开始下一项（800ms 防连点）
+   │  · 误点后 6 秒内可「撤回」，上一项接着走表
+   │  · 最后一项按钮为「结束」；暂停 / 继续按钮在圆环内
    ▼
-点击「结束」
-   │
+拍照查错 → 填写结果 (ResultForm)
+   │  · 每个模块一张卡片：错题数（快选 0–3 + 原生 select）、实时正确率
+   │  · 用时可点铅笔修正（忘按「下一项」时用）
    ▼
-填写结果 (ResultForm)
-   │  · 错题数用原生 select 选择（0 ~ totalCount）
-   │  · 展示用时、自动算出的正确率
+保存全部 → 逐条 addRecord({ source: 'timer', date: 该项结束时刻 })
+   │  · 已保存的项打标记，部分失败后重试不会重复
    ▼
-保存 → addRecord({ source: 'timer', ... }) → 跳转主页
+完成页：成绩摘要 + 「开始下一组计时」（若属于常用组合且有下一组）/ 查看分析
 ```
 
 **要点**
 
+- 计时中 / 待填错题的状态实时写入 `qcpr:practiceDraft:v1`（`lib/practiceDraft.js`），计时器以时间戳快照保存——切到相机或 AI 应用后页面被回收，回来自动恢复，期间时间照常计入；首页同时显示「继续」提醒。
 - 计时进行中申请 **Wake Lock** 保持屏幕常亮（见 8.4），暂停/结束/离开时释放。
 - 超时后**不自动结束**，只做视觉警示——用户可能想做完看真实用时。
-- 结束后只需填**错题数**，用时由计时器自动带入。
 
 ### 8.2 手动补录
 

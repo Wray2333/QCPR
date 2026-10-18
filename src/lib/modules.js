@@ -13,4 +13,11 @@ export const MODULES = [
 
 export const MODULE_MAP = Object.fromEntries(MODULES.map((m) => [m.id, m]));
 
+// 常用连续计时组合：同一页纸上的模块，做完一起拍照查错。
+// 顺序即计时顺序；一组保存后可一键开始下一组。
+export const MODULE_GROUPS = [
+  ['mul_2', 'add_sub_2'],
+  ['add_sub_3', 'div_2', 'div_3'],
+];
+
 export const getModule = (id) => MODULE_MAP[id];

@@ -11,6 +11,7 @@ import WeakModuleAnalysis from '../components/home/WeakModuleAnalysis.jsx';
 import RecentScores from '../components/home/RecentScores.jsx';
 import SetFilter from '../components/home/SetFilter.jsx';
 import DataManager from '../components/home/DataManager.jsx';
+import PendingPractice from '../components/home/PendingPractice.jsx';
 import EmptyState from '../components/common/EmptyState.jsx';
 
 export default function HomePage() {
@@ -62,6 +63,7 @@ export default function HomePage() {
   if (records.length === 0) {
     return (
       <div className="space-y-4 pt-6">
+        <PendingPractice />
         <EmptyState
           icon={ChartLine}
           title="还没有任何练习记录"
@@ -86,6 +88,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-4">
+      <PendingPractice />
       <SetFilter records={records} value={setFilter} onChange={setSetFilter} />
       <RecentSummary records={filtered} />
       <TrendChart records={filtered} />

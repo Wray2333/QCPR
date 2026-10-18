@@ -55,6 +55,34 @@ export function useTimer() {
   /** 取当前精确已用秒数（保存成绩用） */
   const getElapsedSec = useCallback(() => Math.floor(compute() / 1000), [compute]);
 
+  /** 取当前精确已用毫秒数 */
+  const getElapsedMs = useCallback(() => compute(), [compute]);
+
+  /** 计时器快照（持久化用）：startedAt 为 null 表示处于暂停 */
+  const snapshot = useCallback(
+    () => ({
+      accMs: accRef.current,
+      startedAt: runningRef.current ? startRef.current : null,
+    }),
+    []
+  );
+
+  /** 从快照恢复；startedAt 非空则继续走表（期间流逝的时间照常计入） */
+  const restore = useCallback(
+    ({ accMs = 0, startedAt = null } = {}) => {
+      clearInterval(intervalRef.current);
+      accRef.current = accMs;
+      runningRef.current = !!startedAt;
+      startRef.current = startedAt || 0;
+      setRunning(!!startedAt);
+      setElapsedMs(compute());
+      if (startedAt) {
+        intervalRef.current = setInterval(() => setElapsedMs(compute()), TICK_MS);
+      }
+    },
+    [compute]
+  );
+
   useEffect(() => () => clearInterval(intervalRef.current), []);
 
   return {
@@ -64,5 +92,8 @@ export function useTimer() {
     pause,
     reset,
     getElapsedSec,
+    getElapsedMs,
+    snapshot,
+    restore,
   };
 }
