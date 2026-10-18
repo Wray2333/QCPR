@@ -83,3 +83,9 @@ export function normalizeSetId(v) {
   return String(v ?? '').replace(/\D/g, '').slice(0, 4);
 }
 
+/** 集合编号加减 delta，限定 0000–9999 并补足四位；空值视为 0 */
+export function stepSetId(v, delta) {
+  const n = Number(normalizeSetId(v) || 0) + delta;
+  return String(Math.min(9999, Math.max(0, n))).padStart(4, '0');
+}
+
