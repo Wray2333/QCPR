@@ -1,4 +1,5 @@
-import { X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Pencil, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -70,6 +71,14 @@ export default function RecentScores({ records, onDelete }) {
                   {formatDuration(r.durationSec)}
                 </div>
               </div>
+              <Link
+                to={`/record/${encodeURIComponent(r.id)}/edit`}
+                className="-mr-2 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                title="编辑该记录"
+                aria-label="编辑该记录"
+              >
+                <Pencil size={15} strokeWidth={2} aria-hidden />
+              </Link>
               {onDelete && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
